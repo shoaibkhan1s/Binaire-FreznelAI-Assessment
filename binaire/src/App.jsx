@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
-import { View, Badge, Flex, Heading, ActionButton, Text } from '@adobe/react-spectrum';
+import { View, Badge, Flex, Heading, Button, Text, Header, Divider } from '@adobe/react-spectrum';
 import SearchScreen from './pages/SearchScreen';
 import SignupScreen from './pages/SignupScreen';
 import authService from './auth/AuthService';
@@ -34,31 +34,24 @@ function App() {
   if (loading) return <View padding="size-400">Loading...</View>;
 
   return (
-    <View minHeight="100vh" backgroundColor="gray-75">
-      {/* Global Navbar */}
-      <View 
-        backgroundColor="gray-100" 
-        paddingX="size-600" 
-        paddingY="size-200" 
-        borderWidth="thin" 
-        borderColor="gray-300"
-        UNSAFE_style={{ position: 'sticky', top: 0, zIndex: 100, boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)' }}
-      >
-        <Flex justifyContent="space-between" alignItems="center">
+    <View minHeight="100vh" backgroundColor="gray-50">
+      <View backgroundColor="gray-50" paddingX="size-800" paddingY="size-200">
+        <Flex direction="row" justifyContent="space-between" alignItems="center">
           <Flex alignItems="center" gap="size-300">
-            <Heading level={2} margin={0} UNSAFE_style={{ letterSpacing: '1px', fontWeight: '800' }}>BINAIRE</Heading>
+            <Heading level={2} margin={0}>Binaire Models</Heading>
             {!isOnline && (
-              <Badge variant="negative">Offline (Cached Mode)</Badge>
+              <Badge variant="negative">Offline Mode</Badge>
             )}
           </Flex>
           {user && (
             <Flex alignItems="center" gap="size-300">
-              <Text>Signed in as <b>{user.email}</b></Text>
-              <ActionButton onPress={handleLogout} variant="secondary">Log Out</ActionButton>
+              <Text>{user.email}</Text>
+              <Button onPress={handleLogout} variant="primary" style="outline">Log Out</Button>
             </Flex>
           )}
         </Flex>
       </View>
+      <Divider size="S" />
 
       <Routes>
         <Route path="/" element={user ? <SearchScreen /> : <Navigate to="/signup" />} />

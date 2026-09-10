@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { Flex, View, Heading, SearchField, Text, Grid, ProgressCircle, Divider, Picker, Item, RangeSlider, Badge, ActionButton, IllustratedMessage, Content, StatusLight } from '@adobe/react-spectrum';
+import { Flex, View, Heading, SearchField, Text, Grid, ProgressCircle, Divider, Picker, Item, RangeSlider, Badge, ActionButton, IllustratedMessage, Content } from '@adobe/react-spectrum';
 import apiService from '../api/ApiService';
 import SearchEngine from '../search/SearchEngine';
 
@@ -59,164 +59,96 @@ export default function SearchScreen() {
   };
 
   return (
-    <View>
-      {/* Premium Hero Section */}
-      <View 
-        paddingX="size-600" 
-        paddingY="size-800" 
-        UNSAFE_style={{ 
-          background: 'linear-gradient(135deg, #4f46e5 0%, #db2777 100%)', 
-          borderBottomRightRadius: '32px', 
-          borderBottomLeftRadius: '32px',
-          boxShadow: '0 10px 25px rgba(0,0,0,0.1)'
-        }}
-      >
-        <Heading level={1} margin={0} UNSAFE_style={{ color: 'white', fontSize: '2.5rem' }}>AI Model Explorer</Heading>
-        <Text UNSAFE_style={{ color: 'rgba(255,255,255,0.9)', fontSize: '1.2rem', marginTop: '8px', display: 'block' }}>
-          Search, filter, and discover the perfect AI model for your next architecture.
-        </Text>
-      </View>
+    <View paddingX="size-800" paddingY="size-400">
       
       {loading ? (
         <Flex alignItems="center" justifyContent="center" height="50vh">
-          <ProgressCircle aria-label="Loading models…" isIndeterminate size="L" />
+          <ProgressCircle aria-label="Loading models…" isIndeterminate />
         </Flex>
       ) : error ? (
-        <View backgroundColor="negative" padding="size-400" margin="size-600" borderRadius="large">
+        <View backgroundColor="negative" padding="size-400" borderRadius="medium">
           <Text color="static-white">{error}</Text>
         </View>
       ) : (
-        <Flex direction="row" gap="size-600" padding="size-600" wrap="wrap">
+        <Flex direction="column" gap="size-400">
+          <Heading level={1} margin={0}>Search Models</Heading>
           
-          {/* Glassmorphic Sidebar for Filters */}
-          <View 
-            width={{ base: '100%', L: '320px' }}
-            padding="size-400" 
-            backgroundColor="gray-50" 
-            borderRadius="large" 
-            borderWidth="thin" 
-            borderColor="gray-200"
-            UNSAFE_style={{ 
-              position: 'sticky', 
-              top: '100px', 
-              alignSelf: 'flex-start',
-              boxShadow: '0 4px 12px rgba(0,0,0,0.03)'
+          <Flex direction="row" gap="size-400" wrap="wrap" alignItems="end" backgroundColor="gray-100" padding="size-300" borderRadius="medium">
+            <SearchField 
+              label="Model Name or Family" 
+              value={query} 
+              onChange={setQuery} 
+              width="size-3600"
+            />
+            <Picker label="Sort Results" selectedKey={sortBy} onSelectionChange={setSortBy} width="size-2400">
+              <Item key="nameAsc">A-Z</Item>
+              <Item key="nameDesc">Z-A</Item>
+              <Item key="safetensorAsc">Safetensors (Low-High)</Item>
+              <Item key="safetensorDesc">Safetensors (High-Low)</Item>
+            </Picker>
+            <RangeSlider
+              label="Safetensor File Count"
+              value={{ start: filters.safetensorMin, end: filters.safetensorMax }}
+              onChange={handleSafetensorChange}
+              minValue={0}
+              maxValue={500}
+              width="size-3600"
+            />
+          </Flex>
+
+          <Text>{filteredModels.length} models found</Text>
+
+          <Grid
+            columns={{
+              base: '1fr',
+              M: 'repeat(2, 1fr)',
+              L: 'repeat(3, 1fr)',
             }}
+            gap="size-300"
           >
-            <Flex direction="row" alignItems="center" justifyContent="space-between" marginBottom="size-200">
-              <Heading level={3} margin={0}>Refine Results</Heading>
-              <StatusLight variant="info">{filteredModels.length} Found</StatusLight>
-            </Flex>
-            <Divider size="S" marginBottom="size-400" />
-            
-            <Flex direction="column" gap="size-400">
-              <Picker label="Sort Logic" selectedKey={sortBy} onSelectionChange={setSortBy} width="100%">
-                <Item key="nameAsc">Alphabetical (A-Z)</Item>
-                <Item key="nameDesc">Alphabetical (Z-A)</Item>
-                <Item key="safetensorAsc">Safetensor Files: Low to High</Item>
-                <Item key="safetensorDesc">Safetensor Files: High to Low</Item>
-              </Picker>
-
-              <RangeSlider
-                label="Safetensor Density"
-                value={{ start: filters.safetensorMin, end: filters.safetensorMax }}
-                onChange={handleSafetensorChange}
-                minValue={0}
-                maxValue={500}
-                width="100%"
-              />
-            </Flex>
-          </View>
-
-          {/* Main Content Area */}
-          <Flex direction="column" gap="size-400" flex>
-            <View 
-              backgroundColor="gray-50" 
-              padding="size-300" 
-              borderRadius="large" 
-              borderWidth="thin" 
-              borderColor="gray-200"
-              UNSAFE_style={{ boxShadow: '0 4px 12px rgba(0,0,0,0.02)' }}
-            >
-              <SearchField 
-                label="Search by Model Name, ID, or Family" 
-                value={query} 
-                onChange={setQuery} 
-                width="100%"
-                autoFocus
-              />
-            </View>
-
-            <Grid
-              columns={{
-                base: '1fr',
-                M: 'repeat(2, 1fr)',
-                L: 'repeat(2, 1fr)',
-                XL: 'repeat(3, 1fr)',
-              }}
-              gap="size-400"
-            >
-              {filteredModels.map((model) => (
-                <View 
-                  key={model.id} 
-                  backgroundColor="gray-50"
-                  borderWidth="thin" 
-                  borderColor="gray-200" 
-                  padding="size-300" 
-                  borderRadius="large"
-                  UNSAFE_style={{ 
-                    transition: 'all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)', 
-                    cursor: 'pointer',
-                    boxShadow: '0 2px 8px rgba(0,0,0,0.04)'
-                  }}
-                  UNSAFE_className="model-card"
-                >
-                  <Heading level={3} margin={0} marginBottom="size-100" UNSAFE_style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                    {model.display_name || model.id}
-                  </Heading>
+            {filteredModels.map((model) => (
+              <View 
+                key={model.id} 
+                backgroundColor="gray-50"
+                borderWidth="thin" 
+                borderColor="gray-300" 
+                padding="size-300" 
+                borderRadius="medium"
+              >
+                <Flex direction="column" gap="size-100" height="100%">
+                  <Heading level={4} margin={0}>{model.display_name || model.id}</Heading>
+                  <Text size="S" color="gray-600">{model.family || 'Unknown Family'}</Text>
                   
-                  <Flex gap="size-100" wrap marginBottom="size-200">
-                    {model.family && <Badge variant="info">{model.family}</Badge>}
+                  <Flex gap="size-100" wrap marginY="size-100">
                     {model.architecture_category && <Badge variant="neutral">{model.architecture_category}</Badge>}
                     {model.hf_tags?.pipeline_tag && <Badge variant="positive">{model.hf_tags.pipeline_tag}</Badge>}
                   </Flex>
                   
-                  <Divider size="S" marginY="size-200" />
+                  <View flex />
+                  
+                  <Divider size="S" marginY="size-100" />
                   
                   <Flex justifyContent="space-between" alignItems="center">
-                    <Text size="S" color="gray-600" UNSAFE_style={{ fontWeight: '500' }}>
-                      ⚙️ {model.safetensor_file_count} Safetensors
-                    </Text>
-                  </Flex>
-                  
-                  <Flex marginTop="size-300" justifyContent="end">
-                    <ActionButton onPress={() => window.open(model.repo_url, '_blank')} variant="secondary">
-                      View Repository
+                    <Text size="S">Files: {model.safetensor_file_count}</Text>
+                    <ActionButton onPress={() => window.open(model.repo_url, '_blank')} isQuiet>
+                      View
                     </ActionButton>
                   </Flex>
-                </View>
-              ))}
-            </Grid>
-            
-            {filteredModels.length === 0 && (
-              <Flex justifyContent="center" marginTop="size-800">
-                <IllustratedMessage>
-                  <Heading>No Models Found</Heading>
-                  <Content>Try adjusting your search parameters to find what you're looking for.</Content>
-                </IllustratedMessage>
-              </Flex>
-            )}
-          </Flex>
+                </Flex>
+              </View>
+            ))}
+          </Grid>
+          
+          {filteredModels.length === 0 && (
+            <Flex justifyContent="center" marginY="size-800">
+              <IllustratedMessage>
+                <Heading>No Results</Heading>
+                <Content>No models match your filters.</Content>
+              </IllustratedMessage>
+            </Flex>
+          )}
         </Flex>
       )}
-      
-      <style>{`
-        .model-card:hover {
-          transform: translateY(-6px);
-          box-shadow: 0 16px 32px rgba(0,0,0,0.1) !important;
-          border-color: #6366f1 !important;
-        }
-      `}</style>
     </View>
   );
 }
