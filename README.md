@@ -51,12 +51,12 @@ The application's core logic is decoupled from React components using strict Obj
    Copy `.env.example` to a new file named `.env` and fill in your Firebase project credentials:
    ```env
   VITE_FIREBASE_API_KEY="api_key"
-VITE_FIREBASE_AUTH_DOMAIN="auth_domain"
-VITE_FIREBASE_PROJECT_ID="project_id"
-VITE_FIREBASE_STORAGE_BUCKET="storage_bucket"
-VITE_FIREBASE_MESSAGING_SENDER_ID="messagin_sender_id"
-VITE_FIREBASE_APP_ID="app_id"
-   ...
+  VITE_FIREBASE_AUTH_DOMAIN="auth_domain"
+  VITE_FIREBASE_PROJECT_ID="project_id"
+  VITE_FIREBASE_STORAGE_BUCKET="storage_bucket"
+  VITE_FIREBASE_MESSAGING_SENDER_ID="messagin_sender_id"
+  VITE_FIREBASE_APP_ID="app_id"
+   
    ```
 
 4. **Start the Development Server**:
