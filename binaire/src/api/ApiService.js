@@ -55,5 +55,5 @@ class ApiService {
   }
 }
 
-const apiService = new ApiService('https://binaire.app/hf-models-api.json');
+const apiService = new ApiService('/api/hf-models-api.json');
 export default apiService;
