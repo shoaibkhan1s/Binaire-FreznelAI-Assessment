@@ -55,5 +55,5 @@ class ApiService {
   }
 }
 
-const apiService = new ApiService('/api/hf-models-api.json');
+const apiService = new ApiService('https://corsproxy.io/?https%3A%2F%2Fbinaire.app%2Fhf-models-api.json');
 export default apiService;

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { Flex, View, Heading, SearchField, Text, Grid, ProgressCircle, Divider, Picker, Item, RangeSlider, Badge, ActionButton, IllustratedMessage, Content } from '@adobe/react-spectrum';
+import { Flex, View, Heading, SearchField, Text, Grid, ProgressCircle, Divider, Picker, Item, RangeSlider, Badge, ActionButton, IllustratedMessage, Content, StatusLight } from '@adobe/react-spectrum';
 import apiService from '../api/ApiService';
 import SearchEngine from '../search/SearchEngine';
 
@@ -59,35 +59,58 @@ export default function SearchScreen() {
   };
 
   return (
-    <View padding="size-400" minHeight="100vh" backgroundColor="gray-75">
-      <Heading level={1} marginStart="size-200">Model Explorer</Heading>
+    <View>
+      {/* Premium Hero Section */}
+      <View 
+        paddingX="size-600" 
+        paddingY="size-800" 
+        UNSAFE_style={{ 
+          background: 'linear-gradient(135deg, #4f46e5 0%, #db2777 100%)', 
+          borderBottomRightRadius: '32px', 
+          borderBottomLeftRadius: '32px',
+          boxShadow: '0 10px 25px rgba(0,0,0,0.1)'
+        }}
+      >
+        <Heading level={1} margin={0} UNSAFE_style={{ color: 'white', fontSize: '2.5rem' }}>AI Model Explorer</Heading>
+        <Text UNSAFE_style={{ color: 'rgba(255,255,255,0.9)', fontSize: '1.2rem', marginTop: '8px', display: 'block' }}>
+          Search, filter, and discover the perfect AI model for your next architecture.
+        </Text>
+      </View>
       
       {loading ? (
-        <Flex alignItems="center" justifyContent="center" height="70vh">
+        <Flex alignItems="center" justifyContent="center" height="50vh">
           <ProgressCircle aria-label="Loading models…" isIndeterminate size="L" />
         </Flex>
       ) : error ? (
-        <View backgroundColor="negative" padding="size-200" borderRadius="medium">
+        <View backgroundColor="negative" padding="size-400" margin="size-600" borderRadius="large">
           <Text color="static-white">{error}</Text>
         </View>
       ) : (
-        <Flex direction="row" gap="size-400" marginTop="size-200">
+        <Flex direction="row" gap="size-600" padding="size-600" wrap="wrap">
           
-          {/* Sidebar for Filters */}
+          {/* Glassmorphic Sidebar for Filters */}
           <View 
-            width="300px" 
-            padding="size-300" 
-            backgroundColor="gray-100" 
+            width={{ base: '100%', L: '320px' }}
+            padding="size-400" 
+            backgroundColor="gray-50" 
             borderRadius="large" 
             borderWidth="thin" 
-            borderColor="gray-300"
-            UNSAFE_style={{ position: 'sticky', top: '20px', alignSelf: 'flex-start' }}
+            borderColor="gray-200"
+            UNSAFE_style={{ 
+              position: 'sticky', 
+              top: '100px', 
+              alignSelf: 'flex-start',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.03)'
+            }}
           >
-            <Heading level={3} marginTop={0}>Filters</Heading>
-            <Divider size="S" marginBottom="size-300" />
+            <Flex direction="row" alignItems="center" justifyContent="space-between" marginBottom="size-200">
+              <Heading level={3} margin={0}>Refine Results</Heading>
+              <StatusLight variant="info">{filteredModels.length} Found</StatusLight>
+            </Flex>
+            <Divider size="S" marginBottom="size-400" />
             
-            <Flex direction="column" gap="size-300">
-              <Picker label="Sort By" selectedKey={sortBy} onSelectionChange={setSortBy} width="100%">
+            <Flex direction="column" gap="size-400">
+              <Picker label="Sort Logic" selectedKey={sortBy} onSelectionChange={setSortBy} width="100%">
                 <Item key="nameAsc">Alphabetical (A-Z)</Item>
                 <Item key="nameDesc">Alphabetical (Z-A)</Item>
                 <Item key="safetensorAsc">Safetensor Files: Low to High</Item>
@@ -95,7 +118,7 @@ export default function SearchScreen() {
               </Picker>
 
               <RangeSlider
-                label="Safetensor Files Count"
+                label="Safetensor Density"
                 value={{ start: filters.safetensorMin, end: filters.safetensorMax }}
                 onChange={handleSafetensorChange}
                 minValue={0}
@@ -108,14 +131,15 @@ export default function SearchScreen() {
           {/* Main Content Area */}
           <Flex direction="column" gap="size-400" flex>
             <View 
-              backgroundColor="gray-100" 
+              backgroundColor="gray-50" 
               padding="size-300" 
               borderRadius="large" 
               borderWidth="thin" 
-              borderColor="gray-300"
+              borderColor="gray-200"
+              UNSAFE_style={{ boxShadow: '0 4px 12px rgba(0,0,0,0.02)' }}
             >
               <SearchField 
-                label="Search by Model Name or Family" 
+                label="Search by Model Name, ID, or Family" 
                 value={query} 
                 onChange={setQuery} 
                 width="100%"
@@ -127,37 +151,47 @@ export default function SearchScreen() {
               columns={{
                 base: '1fr',
                 M: 'repeat(2, 1fr)',
-                L: 'repeat(3, 1fr)',
+                L: 'repeat(2, 1fr)',
+                XL: 'repeat(3, 1fr)',
               }}
-              gap="size-300"
+              gap="size-400"
             >
               {filteredModels.map((model) => (
                 <View 
                   key={model.id} 
-                  backgroundColor="gray-100"
+                  backgroundColor="gray-50"
                   borderWidth="thin" 
-                  borderColor="gray-400" 
+                  borderColor="gray-200" 
                   padding="size-300" 
                   borderRadius="large"
-                  UNSAFE_style={{ transition: 'transform 0.2s, box-shadow 0.2s', cursor: 'pointer' }}
+                  UNSAFE_style={{ 
+                    transition: 'all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)', 
+                    cursor: 'pointer',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.04)'
+                  }}
                   UNSAFE_className="model-card"
                 >
-                  <Heading level={3} margin={0} marginBottom="size-100">{model.display_name || model.id}</Heading>
+                  <Heading level={3} margin={0} marginBottom="size-100" UNSAFE_style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    {model.display_name || model.id}
+                  </Heading>
+                  
                   <Flex gap="size-100" wrap marginBottom="size-200">
-                    <Badge variant="info">{model.family || 'Unknown Family'}</Badge>
-                    <Badge variant="neutral">{model.architecture_category || 'N/A'}</Badge>
-                    {model.hf_tags?.pipeline_tag && (
-                      <Badge variant="positive">{model.hf_tags.pipeline_tag}</Badge>
-                    )}
+                    {model.family && <Badge variant="info">{model.family}</Badge>}
+                    {model.architecture_category && <Badge variant="neutral">{model.architecture_category}</Badge>}
+                    {model.hf_tags?.pipeline_tag && <Badge variant="positive">{model.hf_tags.pipeline_tag}</Badge>}
                   </Flex>
                   
                   <Divider size="S" marginY="size-200" />
                   
-                  <Text size="S" color="gray-600">Safetensor files: {model.safetensor_file_count}</Text>
+                  <Flex justifyContent="space-between" alignItems="center">
+                    <Text size="S" color="gray-600" UNSAFE_style={{ fontWeight: '500' }}>
+                      ⚙️ {model.safetensor_file_count} Safetensors
+                    </Text>
+                  </Flex>
                   
                   <Flex marginTop="size-300" justifyContent="end">
-                    <ActionButton onPress={() => window.open(model.repo_url, '_blank')}>
-                      View Repo
+                    <ActionButton onPress={() => window.open(model.repo_url, '_blank')} variant="secondary">
+                      View Repository
                     </ActionButton>
                   </Flex>
                 </View>
@@ -168,20 +202,19 @@ export default function SearchScreen() {
               <Flex justifyContent="center" marginTop="size-800">
                 <IllustratedMessage>
                   <Heading>No Models Found</Heading>
-                  <Content>Try adjusting your search query or filters.</Content>
+                  <Content>Try adjusting your search parameters to find what you're looking for.</Content>
                 </IllustratedMessage>
               </Flex>
             )}
           </Flex>
-
         </Flex>
       )}
       
       <style>{`
         .model-card:hover {
-          transform: translateY(-4px);
-          box-shadow: 0 12px 24px rgba(0,0,0,0.15);
-          border-color: var(--spectrum-global-color-blue-500);
+          transform: translateY(-6px);
+          box-shadow: 0 16px 32px rgba(0,0,0,0.1) !important;
+          border-color: #6366f1 !important;
         }
       `}</style>
     </View>
